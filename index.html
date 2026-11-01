@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f0e8" />
+    <meta name="description" content="Capture, crop, and collect interface inspiration." />
+    <title>Hummy — interface inspiration recorder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="wordmark" href="#top" aria-label="Hummy home">hummy<span>•</span></a>
+      <div class="header-note"><kbd>F9</kbd> to capture</div>
+    </header>
+
+    <main id="top">
+      <section class="hero wrap">
+        <div class="eyebrow">A visual library for curious people</div>
+        <h1>Catch the little<br /><em>things</em> that move.</h1>
+        <p class="hero-copy">Record a moment from any website, crop the part worth keeping, and save it with just the app name and domain.</p>
+        <button class="record-button" id="recordButton" type="button">
+          <span class="record-dot" aria-hidden="true"></span>
+          <span id="recordButtonText">Start recording</span>
+          <span class="button-key">F9</span>
+        </button>
+        <p class="permission-note">Your browser will ask which tab or window to share. Nothing is uploaded by this page.</p>
+      </section>
+
+      <section class="capture-section wrap" aria-labelledby="capture-title">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">01 / Capture</div>
+            <h2 id="capture-title">Make a clip.</h2>
+          </div>
+          <div class="status-pill" id="statusPill"><span class="status-light"></span><span id="statusText">Ready</span></div>
+        </div>
+        <div class="recorder-card" id="recorderCard">
+          <div class="idle-state" id="idleState">
+            <div class="crosshair" aria-hidden="true"><span></span><i></i></div>
+            <p class="idle-title">Press F9, then scroll.</p>
+            <p class="idle-subtitle">Your selected tab will be recorded locally in the browser.</p>
+          </div>
+          <div class="recording-state hidden" id="recordingState">
+            <div class="recording-indicator"><span></span> Recording</div>
+            <div class="recording-timer" id="recordingTimer">00:00</div>
+            <p>Scroll through the page. Press F9 again when you have the moment.</p>
+          </div>
+          <div class="preview-state hidden" id="previewState">
+            <video id="rawPreview" controls playsinline></video>
+            <div class="preview-footer"><span>Your raw capture</span><button class="text-button" id="discardButton" type="button">Discard</button></div>
+          </div>
+        </div>
+        <div class="shortcut-tip"><span class="tip-icon">↗</span> F9 works while this page is focused. On some laptops use <strong>Fn + F9</strong>.</div>
+      </section>
+
+      <section class="editor-section wrap hidden" id="editorSection" aria-labelledby="editor-title">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">02 / Crop</div>
+            <h2 id="editor-title">Keep the good part.</h2>
+          </div>
+          <button class="text-button" id="backToCaptureButton" type="button">← Record again</button>
+        </div>
+        <div class="editor-layout">
+          <div class="editor-preview-card">
+            <div class="editor-canvas-wrap" id="canvasWrap">
+              <canvas id="editorCanvas" aria-label="Crop preview"></canvas>
+              <div class="canvas-hint" id="canvasHint">Drag to select a crop</div>
+            </div>
+            <div class="timeline-row">
+              <span class="timeline-label">Moment</span>
+              <input id="timeline" type="range" min="0" max="1" step="0.01" value="0" aria-label="Preview timeline" />
+              <span class="time-readout" id="timeReadout">00:00</span>
+            </div>
+            <div class="shape-tools" role="group" aria-label="Crop shape">
+              <span class="tool-label">Shape</span>
+              <button class="shape-button active" data-shape="rect" type="button">Rectangle</button>
+              <button class="shape-button" data-shape="rounded" type="button">Rounded</button>
+              <button class="shape-button" data-shape="ellipse" type="button">Ellipse</button>
+              <button class="shape-button" data-shape="freeform" type="button">Freeform</button>
+              <button class="text-button reset-button" id="resetCropButton" type="button">Reset</button>
+            </div>
+          </div>
+          <aside class="details-card">
+            <div class="eyebrow">Source</div>
+            <h3>Give it a name.</h3>
+            <p class="field-note">Only the app name and domain appear on the public card.</p>
+            <form id="detailsForm">
+              <label for="appName">App or website name</label>
+              <input id="appName" name="appName" type="text" placeholder="e.g. Linear" maxlength="80" required />
+              <label for="appDomain">Website domain</label>
+              <input id="appDomain" name="appDomain" type="text" placeholder="e.g. linear.app" maxlength="120" required />
+              <p class="domain-error hidden" id="domainError">Enter a domain like example.com.</p>
+              <button class="primary-button" id="exportButton" type="submit">Crop and export <span>↗</span></button>
+            </form>
+            <p class="local-note"><span>⌁</span> Clips stay in this browser until you download or save them.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="result-section wrap hidden" id="resultSection" aria-labelledby="result-title">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">03 / Save</div>
+            <h2 id="result-title">That’s a keeper.</h2>
+          </div>
+          <button class="text-button" id="newCaptureButton" type="button">+ New capture</button>
+        </div>
+        <div class="result-layout">
+          <div class="result-preview-card"><video id="croppedPreview" controls loop playsinline></video></div>
+          <div class="result-details-card">
+            <div class="result-meta"><span class="meta-kicker">Captured from</span><h3 id="resultName">—</h3><a id="resultDomain" href="#" target="_blank" rel="noreferrer">—</a></div>
+            <div class="result-actions">
+              <button class="primary-button" id="saveButton" type="button">Add to my gallery <span>＋</span></button>
+              <button class="secondary-button" id="downloadButton" type="button">Download clip <span>↓</span></button>
+              <button class="secondary-button" id="metadataButton" type="button">Download info <span>↓</span></button>
+            </div>
+            <p class="save-note" id="saveNote">Saved clips are available in this browser’s gallery.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="gallery-section wrap" id="gallery" aria-labelledby="gallery-title">
+        <div class="section-heading gallery-heading">
+          <div>
+            <div class="eyebrow">The collection</div>
+            <h2 id="gallery-title">Small things, saved.</h2>
+          </div>
+          <div class="gallery-count" id="galleryCount">0 clips</div>
+        </div>
+        <div class="gallery-grid" id="galleryGrid">
+          <div class="empty-gallery" id="emptyGallery"><span>✳</span><p>Your first little moment belongs here.</p><small>Save a cropped clip and it will appear in this gallery.</small></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer wrap"><span>hummy / visual inspiration, collected slowly</span><a href="https://github.com/mahekparvez/hummy" target="_blank" rel="noreferrer">Open source on GitHub ↗</a></footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
