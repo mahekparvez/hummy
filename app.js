@@ -3,6 +3,7 @@ const $$ = (selector) => [...document.querySelectorAll(selector)];
 
 const recordButton = $("#recordButton");
 const recordButtonText = $("#recordButtonText");
+const captureSection = $(".capture-section");
 const statusPill = $("#statusPill");
 const statusText = $("#statusText");
 const idleState = $("#idleState");
@@ -31,6 +32,9 @@ const toast = $("#toast");
 const galleryGrid = $("#galleryGrid");
 const emptyGallery = $("#emptyGallery");
 const galleryCount = $("#galleryCount");
+const designQuery = $("#designQuery");
+const aestheticFilter = $("#aestheticFilter");
+const sourceFilter = $("#sourceFilter");
 
 let captureStream = null;
 let mediaRecorder = null;
@@ -112,6 +116,7 @@ async function startRecording() {
     }, { once: true });
 
     mediaRecorder.start(250);
+    setVisible(captureSection, true);
     recordingStartedAt = Date.now();
     timerId = setInterval(updateTimer, 250);
     setVisible(idleState, false);
@@ -136,23 +141,30 @@ function stopRecording() {
   setStatus("Processing");
 }
 
-function finishRecording() {
-  if (!recordedChunks.length) {
-    setStatus("Ready");
-    showToast("No frames were recorded.");
-    return;
-  }
-  recordedBlob = new Blob(recordedChunks, { type: mediaRecorder?.mimeType || "video/webm" });
+function loadRecordedCapture(blob, sourceName = "", sourceDomain = "") {
+  recordedBlob = blob;
   if (recordedUrl) URL.revokeObjectURL(recordedUrl);
   recordedUrl = URL.createObjectURL(recordedBlob);
   rawPreview.src = recordedUrl;
   rawPreview.load();
+  if (sourceName) appNameInput.value = sourceName.slice(0, 80);
+  if (sourceDomain) appDomainInput.value = normalizeDomain(sourceDomain);
+  setVisible(captureSection, true);
   setVisible(idleState, false);
   setVisible(recordingState, false);
   setVisible(previewState, true);
   setStatus("Capture ready");
   showToast("Capture ready to crop.");
   rawPreview.addEventListener("loadedmetadata", prepareEditor, { once: true });
+}
+
+function finishRecording() {
+  if (!recordedChunks.length) {
+    setStatus("Ready");
+    showToast("No frames were recorded.");
+    return;
+  }
+  loadRecordedCapture(new Blob(recordedChunks, { type: mediaRecorder?.mimeType || "video/webm" }));
 }
 
 function prepareEditor() {
@@ -422,11 +434,20 @@ function clearRenderedGalleryUrls() {
 async function renderGallery() {
   try {
     const items = await getGalleryItems();
+    const query = designQuery.value.trim().toLowerCase();
+    const aesthetic = aestheticFilter.value;
+    const source = sourceFilter.value;
+    const visibleItems = items.filter((item) => {
+      const matchesQuery = !query || `${item.name} ${item.domain}`.toLowerCase().includes(query);
+      const matchesAesthetic = aesthetic === "all" || !item.aesthetic || item.aesthetic === "all" || item.aesthetic === aesthetic;
+      const matchesSource = source === "all" || !item.sourceType || item.sourceType === "all" || item.sourceType === source;
+      return matchesQuery && matchesAesthetic && matchesSource;
+    });
     clearRenderedGalleryUrls();
     galleryGrid.querySelectorAll(".gallery-card").forEach((card) => card.remove());
-    emptyGallery.classList.toggle("hidden", items.length > 0);
-    galleryCount.textContent = `${items.length} clip${items.length === 1 ? "" : "s"}`;
-    items.forEach((item) => {
+    emptyGallery.classList.toggle("hidden", visibleItems.length > 0);
+    galleryCount.textContent = `${visibleItems.length} clip${visibleItems.length === 1 ? "" : "s"}`;
+    visibleItems.forEach((item) => {
       const url = URL.createObjectURL(item.blob);
       galleryUrls.set(item.id, url);
       const card = document.createElement("article");
@@ -450,9 +471,8 @@ recordButton.addEventListener("click", () => {
 
 document.addEventListener("keydown", (event) => {
   if (event.code !== "F9" || event.repeat) return;
-  if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
   event.preventDefault();
-  recordButton.click();
+  toggleRecordingFromShortcut();
 });
 
 $("#discardButton").addEventListener("click", () => {
@@ -578,7 +598,12 @@ $("#downloadButton").addEventListener("click", () => {
 });
 
 $("#metadataButton").addEventListener("click", () => {
-  const metadata = { name: appNameInput.value.trim(), domain: normalizeDomain(appDomainInput.value) };
+  const metadata = {
+    name: appNameInput.value.trim(),
+    domain: normalizeDomain(appDomainInput.value),
+    aesthetic: aestheticFilter.value,
+    sourceType: sourceFilter.value
+  };
   downloadBlob(new Blob([JSON.stringify(metadata, null, 2)], { type: "application/json" }), `${safeFilename(appNameInput.value)}.json`);
 });
 
@@ -591,6 +616,8 @@ saveButton.addEventListener("click", async () => {
       blob: croppedBlob,
       name: appNameInput.value.trim(),
       domain: normalizeDomain(appDomainInput.value),
+      aesthetic: aestheticFilter.value,
+      sourceType: sourceFilter.value,
       createdAt: Date.now()
     });
     await renderGallery();
@@ -611,5 +638,21 @@ galleryGrid.addEventListener("click", async (event) => {
   await renderGallery();
   showToast("Removed from your gallery.");
 });
+
+function toggleRecordingFromShortcut() {
+  recordButton.click();
+}
+
+window.addEventListener("message", (event) => {
+  if (event.data?.source !== "hummy-extension") return;
+  if (event.data.type === "toggle-recording") toggleRecordingFromShortcut();
+  if (event.data.type === "recording-ready" && event.data.buffer) {
+    loadRecordedCapture(new Blob([event.data.buffer], { type: event.data.mimeType || "video/webm" }), event.data.sourceName, event.data.sourceDomain);
+  }
+});
+
+designQuery.addEventListener("input", renderGallery);
+aestheticFilter.addEventListener("change", renderGallery);
+sourceFilter.addEventListener("change", renderGallery);
 
 renderGallery();

@@ -72,3 +72,18 @@ h2 { font-size: clamp(31px, 4vw, 48px); letter-spacing: -.065em; margin: 10px 0 
 
 @media (max-width: 800px) { .wrap { width: min(100% - 30px, 600px); }.site-header { width: calc(100% - 30px); height: 67px; }.hero { padding: 75px 0 95px; }.hero::after { right: 0; top: 50px; width: 150px; height: 150px; } section { margin-bottom: 110px; }.recorder-card { min-height: 360px; }.preview-state video { height: 300px; }.editor-layout, .result-layout { grid-template-columns: 1fr; }.gallery-grid { grid-template-columns: repeat(2, 1fr); }.shape-tools { flex-wrap: wrap; }.details-card { padding: 25px 20px; }.site-footer { flex-direction: column; gap: 13px; } }
 @media (max-width: 470px) { .header-note { font-size: 9px; }.hero { padding-top: 58px; }.hero-copy { font-size: 14px; }.gallery-grid { grid-template-columns: 1fr; }.section-heading { align-items: flex-start; gap: 18px; flex-direction: column; }.gallery-heading { flex-direction: row; align-items: center; }.result-details-card { padding: 23px; }.editor-canvas-wrap { min-height: 210px; } }
+.collection-intro { padding: 82px 0 72px; margin-bottom: 0; }
+.collection-intro h1 { font-size: clamp(64px, 10vw, 132px); line-height: .82; letter-spacing: -.1em; margin: 0 0 42px; }
+.collection-controls { display: grid; grid-template-columns: minmax(280px, 1.6fr) minmax(160px, .65fr) minmax(210px, .9fr); gap: 12px; align-items: end; }
+.design-prompt, .select-control { display: flex; flex-direction: column; gap: 9px; }
+.design-prompt span, .select-control span { color: var(--muted); font: 10px "DM Mono", monospace; letter-spacing: .1em; text-transform: uppercase; }
+.design-prompt input, .select-control select { width: 100%; height: 51px; border: 1px solid var(--ink); border-radius: 3px; background: var(--card); color: var(--ink); padding: 0 15px; outline: none; }
+.design-prompt input { font-size: 14px; }
+.design-prompt input::placeholder { color: #aaa69c; }
+.design-prompt input:focus, .select-control select:focus { box-shadow: 0 0 0 3px rgba(29,33,29,.1); }
+.select-control select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%); background-position: calc(100% - 18px) 22px, calc(100% - 13px) 22px; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; cursor: pointer; font-size: 12px; }
+.visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
+.gallery-section { margin-bottom: 95px; }
+.gallery-heading { margin-bottom: 23px; }
+@media (max-width: 800px) { .collection-intro { padding: 58px 0 55px; }.collection-controls { grid-template-columns: 1fr 1fr; }.design-prompt { grid-column: 1 / -1; } }
+@media (max-width: 470px) { .collection-controls { grid-template-columns: 1fr; }.design-prompt { grid-column: auto; }.collection-intro h1 { margin-bottom: 32px; } }

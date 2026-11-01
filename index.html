@@ -14,53 +14,65 @@
   <body>
     <header class="site-header">
       <a class="wordmark" href="#top" aria-label="Hummy home">hummy<span>•</span></a>
-      <div class="header-note"><kbd>F9</kbd> to capture</div>
     </header>
 
     <main id="top">
-      <section class="hero wrap">
-        <div class="eyebrow">A visual library for curious people</div>
-        <h1>Catch the little<br /><em>things</em> that move.</h1>
-        <p class="hero-copy">Record a moment from any website, crop the part worth keeping, and save it with just the app name and domain.</p>
-        <button class="record-button" id="recordButton" type="button">
-          <span class="record-dot" aria-hidden="true"></span>
-          <span id="recordButtonText">Start recording</span>
-          <span class="button-key">F9</span>
-        </button>
-        <p class="permission-note">Your browser will ask which tab or window to share. Nothing is uploaded by this page.</p>
+      <section class="collection-intro wrap" aria-labelledby="collection-title">
+        <h1 id="collection-title">hummy</h1>
+        <div class="collection-controls">
+          <label class="design-prompt">
+            <span>What I want to design</span>
+            <input id="designQuery" type="search" placeholder="Search the collection" autocomplete="off" />
+          </label>
+          <label class="select-control">
+            <span>Aesthetic</span>
+            <select id="aestheticFilter">
+              <option value="all">All aesthetics</option>
+              <option value="minimal">Minimal</option>
+              <option value="playful">Playful</option>
+              <option value="editorial">Editorial</option>
+              <option value="futuristic">Futuristic</option>
+              <option value="tactile">Tactile</option>
+            </select>
+          </label>
+          <label class="select-control">
+            <span>Source</span>
+            <select id="sourceFilter">
+              <option value="all">App / website / extension</option>
+              <option value="app">App</option>
+              <option value="website">Website</option>
+              <option value="extension">Chrome extension</option>
+            </select>
+          </label>
+        </div>
       </section>
 
-      <section class="capture-section wrap" aria-labelledby="capture-title">
+      <section class="capture-section wrap hidden" aria-labelledby="capture-title">
+        <button class="record-button visually-hidden" id="recordButton" type="button"><span id="recordButtonText">Start recording</span></button>
         <div class="section-heading">
           <div>
-            <div class="eyebrow">01 / Capture</div>
+            <div class="eyebrow">Capture</div>
             <h2 id="capture-title">Make a clip.</h2>
           </div>
           <div class="status-pill" id="statusPill"><span class="status-light"></span><span id="statusText">Ready</span></div>
         </div>
         <div class="recorder-card" id="recorderCard">
-          <div class="idle-state" id="idleState">
-            <div class="crosshair" aria-hidden="true"><span></span><i></i></div>
-            <p class="idle-title">Press F9, then scroll.</p>
-            <p class="idle-subtitle">Your selected tab will be recorded locally in the browser.</p>
-          </div>
+          <div class="idle-state" id="idleState"></div>
           <div class="recording-state hidden" id="recordingState">
             <div class="recording-indicator"><span></span> Recording</div>
             <div class="recording-timer" id="recordingTimer">00:00</div>
-            <p>Scroll through the page. Press F9 again when you have the moment.</p>
           </div>
           <div class="preview-state hidden" id="previewState">
             <video id="rawPreview" controls playsinline></video>
             <div class="preview-footer"><span>Your raw capture</span><button class="text-button" id="discardButton" type="button">Discard</button></div>
           </div>
         </div>
-        <div class="shortcut-tip"><span class="tip-icon">↗</span> F9 works while this page is focused. On some laptops use <strong>Fn + F9</strong>.</div>
       </section>
 
       <section class="editor-section wrap hidden" id="editorSection" aria-labelledby="editor-title">
         <div class="section-heading">
           <div>
-            <div class="eyebrow">02 / Crop</div>
+            <div class="eyebrow">Crop</div>
             <h2 id="editor-title">Keep the good part.</h2>
           </div>
           <button class="text-button" id="backToCaptureButton" type="button">← Record again</button>
@@ -88,7 +100,7 @@
           <aside class="details-card">
             <div class="eyebrow">Source</div>
             <h3>Give it a name.</h3>
-            <p class="field-note">Only the app name and domain appear on the public card.</p>
+            <p class="field-note">Only the app name and domain appear on the card.</p>
             <form id="detailsForm">
               <label for="appName">App or website name</label>
               <input id="appName" name="appName" type="text" placeholder="e.g. Linear" maxlength="80" required />
@@ -97,7 +109,6 @@
               <p class="domain-error hidden" id="domainError">Enter a domain like example.com.</p>
               <button class="primary-button" id="exportButton" type="submit">Crop and export <span>↗</span></button>
             </form>
-            <p class="local-note"><span>⌁</span> Clips stay in this browser until you download or save them.</p>
           </aside>
         </div>
       </section>
@@ -105,7 +116,7 @@
       <section class="result-section wrap hidden" id="resultSection" aria-labelledby="result-title">
         <div class="section-heading">
           <div>
-            <div class="eyebrow">03 / Save</div>
+            <div class="eyebrow">Save</div>
             <h2 id="result-title">That’s a keeper.</h2>
           </div>
           <button class="text-button" id="newCaptureButton" type="button">+ New capture</button>
@@ -128,12 +139,12 @@
         <div class="section-heading gallery-heading">
           <div>
             <div class="eyebrow">The collection</div>
-            <h2 id="gallery-title">Small things, saved.</h2>
+            <h2 id="gallery-title">Saved moments.</h2>
           </div>
           <div class="gallery-count" id="galleryCount">0 clips</div>
         </div>
         <div class="gallery-grid" id="galleryGrid">
-          <div class="empty-gallery" id="emptyGallery"><span>✳</span><p>Your first little moment belongs here.</p><small>Save a cropped clip and it will appear in this gallery.</small></div>
+          <div class="empty-gallery" id="emptyGallery"><span>✳</span><p>Your first little moment belongs here.</p><small>Saved clips will appear here.</small></div>
         </div>
       </section>
     </main>
@@ -143,3 +154,5 @@
     <script src="app.js"></script>
   </body>
 </html>
+
+
