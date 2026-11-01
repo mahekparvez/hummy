@@ -643,13 +643,6 @@ function toggleRecordingFromShortcut() {
   recordButton.click();
 }
 
-window.addEventListener("message", (event) => {
-  if (event.data?.source !== "hummy-extension") return;
-  if (event.data.type === "toggle-recording") toggleRecordingFromShortcut();
-  if (event.data.type === "recording-ready" && event.data.buffer) {
-    loadRecordedCapture(new Blob([event.data.buffer], { type: event.data.mimeType || "video/webm" }), event.data.sourceName, event.data.sourceDomain);
-  }
-});
 
 designQuery.addEventListener("input", renderGallery);
 aestheticFilter.addEventListener("change", renderGallery);
